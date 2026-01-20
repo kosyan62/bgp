@@ -1,0 +1,17 @@
+# 1) Create an interface to be used as a VXLAN tunnel endpoint
+ip addr add 10.0.0.2/24 dev eth0
+ip link set eth0 up
+
+# 2) Create a bridge interface
+ip link add br0 type bridge
+ip link set br0 up
+
+# 3) Add host-facing interface to bridge
+ip link set eth1 up
+ip link set eth1 master br0
+
+# 4) Configure VXLAN tunnel in multicast mode
+ip link add vxlan10 type vxlan id 10 dev eth0 group 239.1.1.1 dstport 4789
+ip link set vxlan10 up
+ip link set vxlan10 master br0
+
