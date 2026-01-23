@@ -1,0 +1,25 @@
+#1) Frroruting shell
+vtysh
+
+#2) Configuration mode
+config t
+
+#3) Hostname, disable ipv6 forwarding
+hostname router-mgena-1
+no ipv6 forwarding
+
+#4) Setup inerface eth0
+interface eth0
+ip address 10.1.1.10/30
+
+#5) Setup interface lo
+interface lo
+ip address 1.1.1.4/32
+ip ospf passive
+
+router ospf
+network 1.1.1.4/32 area 0
+network 10.1.1.8/30 area 0
+
+end
+write
