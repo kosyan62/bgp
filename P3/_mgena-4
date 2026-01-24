@@ -1,14 +1,32 @@
-#1) Frroruting shell
+# 1) Setup a loopback interface
+ip addr add 1.1.1.4/32 dev lo
+ip link set lo up
+
+# 2) Create a bridge interface
+ip link add br0 type bridge
+ip link set br0 up
+
+# 3) Add host-facing interface to bridge
+ip link set eth1 up
+ip link set eth1 master br0
+
+# 4) Configure VXLAN tunnel
+ip link add vxlan10 type vxlan id 10 dstport 4789 local 1.1.1.4 nolearning
+ip link set vxlan10 up
+ip link set vxlan10 master br0
+
+#5) Frroruting shell
 vtysh
 
-#2) Configuration mode
+#6) Configuration mode
 config t
 
-#3) Hostname, disable ipv6 forwarding
+#7) Hostname, disable ipv6 forwarding
 hostname router-mgena-1
 no ipv6 forwarding
+service integrated-vtysh-config
 
-#4) Setup inerface eth0
+#8) Setup inerface eth0
 interface eth0
 ip address 10.1.1.10/30
 
@@ -17,9 +35,26 @@ interface lo
 ip address 1.1.1.4/32
 ip ospf passive
 
+#6) Enable OSPF
 router ospf
 network 1.1.1.4/32 area 0
 network 10.1.1.8/30 area 0
 
+#7) Setup BGP
+router bgp 65000
+bgp router-id 1.1.1.4
+no bgp default ipv4-unicast
+
+#8) Setup BGP neighbor
+neighbor 1.1.1.1 remote-as 65000
+neighbor 1.1.1.1 update-source lo
+
+#9) Setup EVPN
+address-family l2vpn evpn
+neighbor 1.1.1.1 activate
+advertise-all-vni
+exit-address-family
+
 end
 write
+exit

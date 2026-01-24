@@ -7,7 +7,7 @@ config t
 #3) Hostname, disable ipv6 forwarding
 hostname router-mgena-1
 no ipv6 forwarding
-no shutdown
+service integrated-vtysh-config
 
 #4) Setup interface eth0
 interface eth0
@@ -36,6 +36,27 @@ network 1.1.1.1/32 area 0
 network 10.1.1.0/30 area 0
 network 10.1.1.4/30 area 0
 network 10.1.1.8/30 area 0
+
+#9) Setup BGP
+router bgp 65000
+bgp router-id 1.1.1.1
+no bgp default ipv4-unicast
+
+#10) Configure BGP peer-group LEAFS
+neighbor LEAFS peer-group
+neighbor LEAFS remote-as 65000
+neighbor LEAFS update-source lo
+
+#11) Configure BGP neighbors in peer-group LEAFS
+neighbor 1.1.1.2 peer-group LEAFS
+neighbor 1.1.1.3 peer-group LEAFS
+neighbor 1.1.1.4 peer-group LEAFS
+
+#12) Enable EVPN on all interfaces
+address-family l2vpn evpn
+neighbor LEAFS activate
+neighbor LEAFS route-reflector-client
+exit-address-family
 
 end
 write
