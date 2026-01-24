@@ -1,0 +1,2 @@
+# In subject - this host should exchange packets using MAC address, without IP
+ip link set eth0 up
