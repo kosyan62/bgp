@@ -1,16 +1,16 @@
-# 1) Create an interface to be used as a VXLAN tunnel endpoint
+# 1) Assign address to the uplink interface
 ip addr add 10.0.0.1/24 dev eth0
-ip link set eth0 up
 
-# 2) Create a bridge interface
+# 2) Create a bridge interface and bring it up
 ip link add br0 type bridge
 ip link set br0 up
 
 # 3) Add host-facing interface to bridge
-ip link set eth1 up
 ip link set eth1 master br0
 
 # 4) Configure VXLAN tunnel in static mode
-ip link add vxlan10 type vxlan id 10 dev eth0 remote 10.0.0.2 dstport 4789
-ip link set vxlan10 up
+ip link add vxlan10 type vxlan id 10 dev eth0 remote 10.0.0.2 dstport 4242
+
+# 5) Associate VXLAN with downlink via bridge and bring it up
 ip link set vxlan10 master br0
+ip link set vxlan10 up
