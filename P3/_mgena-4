@@ -7,11 +7,10 @@ ip link add br0 type bridge
 ip link set br0 up
 
 # 3) Add host-facing interface to bridge
-ip link set eth1 up
 ip link set eth1 master br0
 
 # 4) Configure VXLAN tunnel
-ip link add vxlan10 type vxlan id 10 dstport 4789 local 1.1.1.4 nolearning
+ip link add vxlan10 type vxlan id 10 dstport 4242 local 1.1.1.4 nolearning
 ip link set vxlan10 up
 ip link set vxlan10 master br0
 
@@ -22,7 +21,7 @@ vtysh
 config t
 
 #7) Hostname, disable ipv6 forwarding
-hostname router-mgena-1
+hostname router-mgena-4
 no ipv6 forwarding
 service integrated-vtysh-config
 
